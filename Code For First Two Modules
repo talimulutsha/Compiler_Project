@@ -1,0 +1,90 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+string input;
+
+void lexicalAnalyzer()
+{
+    cout << "\nLexical Analyzer" << endl;
+
+    for (int i = 0; i < input.length(); i++)
+    {
+        if (input[i] == ' ')
+        {
+            continue;
+        }
+
+        if (input[i] >= 'a' && input[i] <= 'z')
+        {
+            cout << input[i] << " : Identifier" << endl;
+        }
+        else if (input[i] >= '0' && input[i] <= '9')
+        {
+            cout << input[i] << " : Number" << endl;
+        }
+        else if (input[i] == '=')
+        {
+            cout << input[i] << " : Assignment Operator" << endl;
+        }
+        else if (input[i] == '+')
+        {
+            cout << input[i] << " : Plus Operator" << endl;
+        }
+        else if (input[i] == '-')
+        {
+            cout << input[i] << " : Minus Operator" << endl;
+        }
+        else if (input[i] == '*')
+        {
+            cout << input[i] << " : Multiply Operator" << endl;
+        }
+        else if (input[i] == '/')
+        {
+            cout << input[i] << " : Divide Operator" << endl;
+        }
+    }
+}
+
+void parser()
+{
+    cout << "\nParser" << endl;
+
+    int equal = input.find('=');
+
+    if (equal != string::npos)
+    {
+        cout << "Assignment found" << endl;
+
+        cout << "Left side: ";
+        cout << input[0] << endl;
+
+        cout << "Right side: ";
+        cout << input.substr(equal + 1) << endl;
+
+        cout << "Expression structure:" << endl;
+        cout << "Identifier = Expression" << endl;
+
+        cout << "Parser completed" << endl;
+    }
+    else
+    {
+        cout << "No assignment operator found" << endl;
+    }
+}
+
+int main()
+{
+    cout << "Simple Calculator Compiler" << endl;
+
+    cout << "Enter expression: ";
+    getline(cin, input);
+
+    cout << "\nInput Expression: " << input << endl;
+
+    lexicalAnalyzer();
+
+    parser();
+
+    return 0;
+}
