@@ -1,0 +1,251 @@
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+string input;
+int pos = 0;
+bool error = false;
+
+void lexicalAnalyzer()
+{
+    cout << "\nLexical Analysis:" << endl;
+
+    for (int i = 0; i < input.length(); i++)
+    {
+        if (input[i] == ' ')
+        {
+            continue;
+        }
+
+        if (isalpha(input[i]))
+        {
+            cout << input[i] << " = Identifier" << endl;
+        }
+        else if (isdigit(input[i]))
+        {
+            cout << input[i] << " = Number" << endl;
+        }
+        else if (input[i] == '=')
+        {
+            cout << input[i] << " = Assignment Operator" << endl;
+        }
+        else if (input[i] == '+')
+        {
+            cout << input[i] << " = Plus Operator" << endl;
+        }
+        else if (input[i] == '-')
+        {
+            cout << input[i] << " = Minus Operator" << endl;
+        }
+        else if (input[i] == '*')
+        {
+            cout << input[i] << " = Multiply Operator" << endl;
+        }
+        else if (input[i] == '/')
+        {
+            cout << input[i] << " = Divide Operator" << endl;
+        }
+        else if (input[i] == '(')
+        {
+            cout << input[i] << " = Left Bracket" << endl;
+        }
+        else if (input[i] == ')')
+        {
+            cout << input[i] << " = Right Bracket" << endl;
+        }
+        else
+        {
+            cout << input[i] << " = Invalid" << endl;
+        }
+    }
+}
+
+bool syntaxChecker()
+{
+    int equalPosition = input.find('=');
+
+    if (equalPosition == string::npos)
+    {
+        return false;
+    }
+
+    if (equalPosition == 0)
+    {
+        return false;
+    }
+
+    if (!isalpha(input[0]))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+int expression();
+
+int number()
+{
+    int num = 0;
+
+    while (pos < input.length() && isdigit(input[pos]))
+    {
+        num = num * 10 + (input[pos] - '0');
+        pos++;
+    }
+
+    return num;
+}
+
+int factor()
+{
+    while (pos < input.length() && input[pos] == ' ')
+    {
+        pos++;
+    }
+
+    if (pos >= input.length())
+    {
+        error = true;
+        return 0;
+    }
+
+    if (isdigit(input[pos]))
+    {
+        return number();
+    }
+
+    if (input[pos] == '(')
+    {
+        pos++;
+
+        int result = expression();
+
+        while (pos < input.length() && input[pos] == ' ')
+        {
+            pos++;
+        }
+
+        if (pos < input.length() && input[pos] == ')')
+        {
+            pos++;
+            return result;
+        }
+
+        error = true;
+        return 0;
+    }
+
+    error = true;
+    return 0;
+}
+
+int term()
+{
+    int result = factor();
+
+    while (true)
+    {
+        while (pos < input.length() && input[pos] == ' ')
+        {
+            pos++;
+        }
+
+        if (pos < input.length() && input[pos] == '*')
+        {
+            pos++;
+            result = result * factor();
+        }
+        else if (pos < input.length() && input[pos] == '/')
+        {
+            pos++;
+
+            int value = factor();
+
+            if (value == 0)
+            {
+                error = true;
+                return 0;
+            }
+
+            result = result / value;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return result;
+}
+
+int expression()
+{
+    int result = term();
+
+    while (true)
+    {
+        while (pos < input.length() && input[pos] == ' ')
+        {
+            pos++;
+        }
+
+        if (pos < input.length() && input[pos] == '+')
+        {
+            pos++;
+            result = result + term();
+        }
+        else if (pos < input.length() && input[pos] == '-')
+        {
+            pos++;
+            result = result - term();
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return result;
+}
+
+int main()
+{
+    cout << "Simple Calculator Compiler" << endl;
+    cout << "Enter expression: ";
+
+    getline(cin, input);
+
+    lexicalAnalyzer();
+
+    if (!syntaxChecker())
+    {
+        cout << "\nInvalid Expression" << endl;
+        cout << "Syntax Error" << endl;
+        return 0;
+    }
+
+    pos = input.find('=') + 1;
+
+    int result = expression();
+
+    while (pos < input.length() && input[pos] == ' ')
+    {
+        pos++;
+    }
+
+    if (error || pos != input.length())
+    {
+        cout << "\nInvalid Expression" << endl;
+        cout << "Syntax Error" << endl;
+    }
+    else
+    {
+        cout << "\nValid Expression" << endl;
+        cout << "Parse Successful" << endl;
+        cout << "Result = " << result << endl;
+    }
+
+    return 0;
+}
